@@ -17,6 +17,7 @@ function regionDetail.new(info)
     })--# assume self: REGION_DETAIL
 
     local region = get_region(info.key)
+
     local settlement = region:settlement()
     local is_abandoned = region:is_abandoned()
     local owning_faction = region:owning_faction()
@@ -26,7 +27,7 @@ function regionDetail.new(info)
 
 
 
-
+    self.province = info.province --:string
     self.key = info.key --:string
     self.region = region --:CA_REGION
     self.settlement = settlement --: CA_SETTLEMENT
@@ -63,10 +64,11 @@ function regionDetail.register_to_manager(self, manager)
     Log.write("RegisterToManager added ["..self.key.."] to the RM")
 end;
 
---v function(self: REGION_DETAIL) --> table
+--v function(self: REGION_DETAIL) --> map<string, WHATEVER>
 function regionDetail.prepare_save_table(self)
     i = {}
     i.key = self.key --:string
+    i.province = self.province --:string
     i.migration_restricted = self.migration --: boolean
     i.tax_level = self.tax_level --: number
     i.e_pop = self.e_pop --:number
@@ -76,13 +78,13 @@ function regionDetail.prepare_save_table(self)
     i.t_pool = self.t_pool --: number
     i.e_pool = self.e_pool --: number
     i.s_pool = self.s_pool --: number
-    i.m_cap = self.m_cap
-    i.t_cap = self.t_cap
-    i.e_cap = self.e_cap
-    i.s_cap = self.s_cap
-    i.religion = self.religion 
-    i.buildings = self.buildings 
-    i.bundles = self.bundles 
+    i.m_cap = self.m_cap --: number
+    i.t_cap = self.t_cap --: number
+    i.e_cap = self.e_cap --: number
+    i.s_cap = self.s_cap --: number
+    i.religion = self.religion --:vector<map<string, WHATEVER>>
+    i.buildings = self.buildings --: vector<string>
+    i.bundles = self.bundles  --:vector<string>
 
     return i;
 
@@ -92,6 +94,27 @@ end;
 --------------------------
 --Data Retrieval Methods--
 --------------------------
+
+--v function(self: REGION_DETAIL) --> CA_FACTION
+function regionDetail.get_owner(self)
+    return self.owning_faction;
+end
+
+--v function(self: REGION_DETAIL) --> string
+function regionDetail.get_subculture(self)
+    return self.owning_subculture;
+end;
+
+--v function(self: REGION_DETAIL) --> string
+function regionDetail.get_climate(self)
+    return self.climate;
+end
+
+--v function(self: REGION_DETAIL) --> CA_SETTLEMENT
+function regionDetail.get_settlement(self)
+    return self.settlement;
+end;
+
 
 --v function(self: REGION_DETAIL) --> number
 function regionDetail.get_econ_pop(self)
@@ -137,6 +160,54 @@ end;
 function regionDetail.tax_rate(self)
     return self.tax_level;
 end;
+
+--v function(self: REGION_DETAIL) --> vector<string>
+function regionDetail.get_buildings(self)
+    return self.buildings
+end;
+
+--v function(self: REGION_DETAIL) --> string
+function regionDetail.get_province(self)
+    return self.province;
+end;
+
+--v function(self: REGION_DETAIL) --> boolean
+function regionDetail.can_recruit_m_pool(self)
+    if self.m_pool > 100 then
+        return true;
+    else
+        return false
+    end
+end
+
+--v function(self: REGION_DETAIL) --> boolean
+function regionDetail.can_recruit_t_pool(self)
+    if self.t_pool > 100 then
+        return true;
+    else
+        return false
+    end
+end
+
+--v function(self: REGION_DETAIL) --> boolean
+function regionDetail.can_recruit_e_pool(self)
+    if self.e_pool > 100 then
+        return true;
+    else
+        return false
+    end
+end
+
+--v function(self: REGION_DETAIL) --> boolean
+function regionDetail.can_recruit_s_pool(self)
+    if self.s_pool > 100 then
+        return true;
+    else
+        return false
+    end
+end
+
+
 
 
 -----------------------
